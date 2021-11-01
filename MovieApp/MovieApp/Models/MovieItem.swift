@@ -15,5 +15,5 @@ struct MovieItem: Decodable {
     let pubDate: String
     let director: String
     let actor: String
-    let userRation: String
+    let userRating: String
 }
