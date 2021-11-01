@@ -8,7 +8,7 @@
 import Foundation
 
 struct MovieItemList: Decodable {
-    let lastBuildData: String
+    let lastBuildDate: String
     let total: Int
     let start: Int
     let display: Int
