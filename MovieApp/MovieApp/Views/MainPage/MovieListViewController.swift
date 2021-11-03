@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MovieListViewController: UIViewController {
+class MovieListViewController: UIViewController, MovieListDelegate {
     private let movieTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MovieListCell.self, forCellReuseIdentifier: MovieListCell.identifier)
@@ -36,6 +36,12 @@ class MovieListViewController: UIViewController {
         bindData()
         setDataSource()
         setDelegate()
+    }
+    
+    func finishedFetch() {
+        DispatchQueue.main.async {
+            self.indicater.stopAnimating()
+        }
     }
     
     private func setDataSource() {
@@ -100,6 +106,8 @@ extension MovieListViewController: UITableViewDataSource {
               let movieItem = self.movieListViewModel.movieItemList?[indexPath.row] else {
             return UITableViewCell()
         }
+        
+        cell.movieListDelegate = self
         cell.setMovieListCell(movieItem: movieItem, indexPath: indexPath)
         
         return cell
@@ -114,7 +122,14 @@ extension MovieListViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
         self.movieListViewModel.fetch(page: self.page, search: searchText) { error in
-            guard let _ = error else { return }
+            if let error = error, let networkError = error as? MovieError {
+                self.alert(title: networkError.descripion)
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.indicater.startAnimating()
+            }
         }
     }
 }
