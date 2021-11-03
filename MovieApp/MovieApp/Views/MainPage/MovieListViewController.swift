@@ -34,13 +34,17 @@ class MovieListViewController: UIViewController {
         setNaviation()
         setConstraints()
         bindData()
-        fetchMovieItem()
-        setMovieTableView()
+        setDataSource()
+        setDelegate()
     }
     
-    private func setMovieTableView() {
+    private func setDataSource() {
         self.movieTableView.dataSource = self
+    }
+    
+    private func setDelegate() {
         self.movieTableView.delegate = self
+        self.searchController.searchBar.delegate = self
     }
     
     private func setNaviation() {
@@ -57,12 +61,6 @@ class MovieListViewController: UIViewController {
             DispatchQueue.main.async {
                 self.movieTableView.reloadData()
             }
-        }
-    }
-    
-    private func fetchMovieItem() {
-        self.movieListViewModel.fetch(page: self.page, search: "사랑") { error in
-            guard let _ = error else { return }
         }
     }
     
@@ -110,4 +108,13 @@ extension MovieListViewController: UITableViewDataSource {
 
 extension MovieListViewController: UITableViewDelegate {
     
+}
+
+extension MovieListViewController: UISearchBarDelegate {
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        self.movieListViewModel.fetch(page: self.page, search: searchText) { error in
+            guard let _ = error else { return }
+        }
+    }
 }
