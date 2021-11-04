@@ -8,6 +8,13 @@
 import Foundation
 
 final class MovieListViewModel {
+    
+    enum MovieInformation {
+        case diector
+        case actor
+        case rating
+    }
+    
     private var itemListFetchHandler: (() -> Void)?
     private var itemImageHandler: (() -> Void)?
     private let session: MovieSession
@@ -80,46 +87,35 @@ final class MovieListViewModel {
         }
     }
     
-    func convertDirector() -> String {
-        guard let item = self.movieItem else { return "" }
-        let diector = item.director
-        let dumpCharactorCount = diector.filter { $0 == "|" }.count
-        var convertedDirector = diector.trimmingCharacters(in: ["|"])
+    func convertFormat(movieText: String, movieInformation: MovieInformation) -> String {
+        let dumpCharactorCount = movieText.filter { $0 == "|" }.count
+        var convertedText = movieText.trimmingCharacters(in: ["|"])
         
-        if dumpCharactorCount > 1 {
-            convertedDirector = convertedDirector.replacingOccurrences(of: "|", with: ", ")
-            return convertedDirector
+        switch movieInformation {
+        case .diector:
+            if dumpCharactorCount > 1 {
+                convertedText = convertedText.replacingOccurrences(of: "|", with: ", ")
+                return convertedText
+            }
+       
+            return "감독 : \(convertedText)"
+            
+        case .actor:
+            if dumpCharactorCount > 1 {
+                convertedText = convertedText.replacingOccurrences(of: "|", with: ", ")
+                return convertedText
+            }
+       
+            return "출연 : \(convertedText)"
+            
+        case .rating:
+            if dumpCharactorCount > 1 {
+                convertedText = convertedText.replacingOccurrences(of: "|", with: ", ")
+                return convertedText
+            }
+       
+            return "평점 : \(convertedText)"
         }
-   
-        return "감독 : \(convertedDirector)"
-    }
-    
-    func convertActor() -> String {
-        guard let item = self.movieItem else { return "" }
-        let actor = item.actor
-        let dumpCharactorCount = actor.filter { $0 == "|" }.count
-        var convertedActor = actor.trimmingCharacters(in: ["|"])
-        
-        if dumpCharactorCount > 1 {
-            convertedActor = convertedActor.replacingOccurrences(of: "|", with: ", ")
-            return convertedActor
-        }
-   
-        return "출연 : \(convertedActor)"
-    }
-    
-    func convertRating() -> String {
-        guard let item = self.movieItem else { return "" }
-        let rating = item.userRating
-        let dumpCharactorCount = rating.filter { $0 == "|" }.count
-        var convertedRating = rating.trimmingCharacters(in: ["|"])
-        
-        if dumpCharactorCount > 1 {
-            convertedRating = convertedRating.replacingOccurrences(of: "|", with: ", ")
-            return convertedRating
-        }
-   
-        return "평점 : \(convertedRating)"
     }
     
     func fetch(page: Int, search: String, completion: @escaping (Error?) -> Void) {
