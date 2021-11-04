@@ -27,7 +27,6 @@ class MovieListViewController: UIViewController, MovieListDelegate {
         return search
     }()
     private let movieListViewModel = MovieListViewModel()
-    private var page = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,8 +43,23 @@ class MovieListViewController: UIViewController, MovieListDelegate {
         }
     }
     
+    private func fetchMovie(page: Int, search: String) {
+        self.movieListViewModel.fetch(page: page, search: search) { [unowned self] error in
+            if let error = error, let networkError = error as? MovieError {
+                self.alert(title: networkError.descripion)
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.indicater.startAnimating()
+            }
+        }
+    }
+
+    
     private func setDataSource() {
         self.movieTableView.dataSource = self
+        self.movieTableView.prefetchDataSource = self
     }
     
     private func setDelegate() {
@@ -94,6 +108,7 @@ class MovieListViewController: UIViewController, MovieListDelegate {
             self.indicater.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ])
     }
+    
 }
 
 extension MovieListViewController: UITableViewDataSource {
@@ -121,14 +136,29 @@ extension MovieListViewController: UITableViewDelegate {
 extension MovieListViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
-        self.movieListViewModel.fetch(page: self.page, search: searchText) { error in
-            if let error = error, let networkError = error as? MovieError {
-                self.alert(title: networkError.descripion)
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self.indicater.startAnimating()
+        self.movieListViewModel.resetItemList()
+        self.movieListViewModel.resetPage()
+        self.movieListViewModel.setSearchText(search: searchText)
+        fetchMovie(page: self.movieListViewModel.moviePage, search: searchText)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        DispatchQueue.main.async {
+            self.indicater.stopAnimating()
+        }
+    }
+}
+
+extension MovieListViewController: UITableViewDataSourcePrefetching {
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        let movies = self.movieListViewModel.movieItemList?.count
+        let page = self.movieListViewModel.moviePage
+        let search = self.movieListViewModel.movieSearchText ?? ""
+        
+        for indexPath in indexPaths {
+            if movies == indexPath.row + 2, movies == 10 {
+                self.movieListViewModel.plusPage()
+                fetchMovie(page: page, search: search)
             }
         }
     }
