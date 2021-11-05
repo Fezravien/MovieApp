@@ -43,6 +43,14 @@ class MovieListViewController: UIViewController, MovieListDelegate {
         }
     }
     
+    func removeFavoriteItem(item: MovieItem) {
+        self.movieListViewModel.removeFavoriteItem(item: item)
+    }
+    
+    func addFavoriteItem(item: MovieItem) {
+        self.movieListViewModel.addFavoriteItem(item: item)
+    }
+    
     private func fetchMovie(page: Int, search: String) {
         self.movieListViewModel.fetch(page: page, search: search) { [unowned self] error in
             if let error = error, let networkError = error as? MovieError {
@@ -130,7 +138,7 @@ extension MovieListViewController: UITableViewDataSource {
 }
 
 extension MovieListViewController: UITableViewDelegate {
-    
+
 }
 
 extension MovieListViewController: UISearchBarDelegate {
@@ -152,13 +160,12 @@ extension MovieListViewController: UISearchBarDelegate {
 extension MovieListViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         let movies = self.movieListViewModel.movieItemList?.count
-        let page = self.movieListViewModel.moviePage
         let search = self.movieListViewModel.movieSearchText ?? ""
         
         for indexPath in indexPaths {
             if movies == indexPath.row + 2, movies == 10 {
                 self.movieListViewModel.plusPage()
-                fetchMovie(page: page, search: search)
+                fetchMovie(page: self.movieListViewModel.moviePage, search: search)
             }
         }
     }

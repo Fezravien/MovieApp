@@ -17,6 +17,8 @@ final class MovieListViewModel {
     
     private var itemListFetchHandler: (() -> Void)?
     private var itemImageHandler: (() -> Void)?
+    private var favoriteListHandler: (() -> Void)?
+    private var favoriteHandler: (() -> Void)?
     private let session: MovieSession
     private(set) var movieItem: MovieItem?
     private(set) var moviePage = 0
@@ -31,6 +33,16 @@ final class MovieListViewModel {
             itemImageHandler?()
         }
     }
+    private(set) var movieFavoriteList: [MovieItem]? {
+        didSet {
+            favoriteListHandler?()
+        }
+    }
+    private(set) var movieFavorite = false {
+        didSet {
+            favoriteHandler?()
+        }
+    }
     
     init(session: MovieSession = URLSession.shared) {
         self.session = session
@@ -42,6 +54,36 @@ final class MovieListViewModel {
     
     func bindItemImage(itemImageHandler: @escaping () -> Void) {
         self.itemImageHandler = itemImageHandler
+    }
+    
+    func bindMovieFavoriteList(favoriteListHandler: @escaping () -> Void) {
+        self.favoriteListHandler = favoriteListHandler
+    }
+    
+    func bindMovieFavorite(favoriteHandler: @escaping () -> Void) {
+        self.favoriteHandler = favoriteHandler
+    }
+    
+    func toggleFavortie(favorite: Bool) {
+        self.movieFavorite = favorite
+    }
+    
+    func addFavoriteItem(item: MovieItem) {
+        if let _ = self.movieFavoriteList {
+            self.movieFavoriteList?.append(item)
+        } else {
+            self.movieFavoriteList = [item]
+        }
+    }
+    
+    func removeFavoriteItem(item: MovieItem) {
+        guard let favoriteList = self.movieFavoriteList,
+              let index = favoriteList.firstIndex(of: item) else {
+                  
+                  return
+              }
+
+        self.movieFavoriteList?.remove(at: index)
     }
     
     func setItem(movieItem: MovieItem) {
