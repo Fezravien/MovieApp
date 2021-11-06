@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MovieListViewController: UIViewController, MovieListDelegate {
+class MovieListViewController: UIViewController {
     private let movieTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(MovieListCell.self, forCellReuseIdentifier: MovieListCell.identifier)
@@ -37,30 +37,15 @@ class MovieListViewController: UIViewController, MovieListDelegate {
         setDelegate()
     }
     
-    func finishedFetch() {
-        DispatchQueue.main.async {
-            self.indicater.stopAnimating()
-        }
-    }
-    
-    func removeFavoriteItem(item: MovieItem) {
-        self.movieListViewModel.removeFavoriteItem(item: item)
-    }
-    
-    func addFavoriteItem(item: MovieItem) {
-        self.movieListViewModel.addFavoriteItem(item: item)
-    }
-    
     private func fetchMovie(page: Int, search: String) {
-        self.movieListViewModel.fetch(page: page, search: search) { [unowned self] error in
-            if let error = error, let networkError = error as? MovieError {
-                self.alert(title: networkError.descripion)
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self.indicater.startAnimating()
-            }
+        self.indicater.startAnimating()
+        self.movieListViewModel.fetch(page: page, search: search) { _ in
+//            if let error = error, let networkError = error as? MovieError {
+//                DispatchQueue.main.async {
+//                    self.alert(title: networkError.descripion)
+//                }
+//                return
+//            }
         }
     }
 
@@ -82,6 +67,15 @@ class MovieListViewController: UIViewController, MovieListDelegate {
         self.navigationItem.hidesSearchBarWhenScrolling = false
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.navigationBar.backgroundColor = .white
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"), style: .plain, target: self, action: #selector(tappedFavoriteButton))
+        self.navigationItem.rightBarButtonItem?.tintColor = .systemOrange
+    }
+    
+    @objc private func tappedFavoriteButton() {
+        let favoriteListViewController = FavoriteListViewController()
+        favoriteListViewController.movieListDelegate = self
+        favoriteListViewController.setFavorite(favoriteList: self.movieListViewModel.movieFavoriteList ?? [])
+        self.navigationController?.pushViewController(favoriteListViewController, animated: true)
     }
     
     private func bindData() {
@@ -116,7 +110,6 @@ class MovieListViewController: UIViewController, MovieListDelegate {
             self.indicater.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ])
     }
-    
 }
 
 extension MovieListViewController: UITableViewDataSource {
@@ -126,12 +119,10 @@ extension MovieListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MovieListCell.identifier, for: indexPath) as? MovieListCell,
-              let movieItem = self.movieListViewModel.movieItemList?[indexPath.row] else {
-            return UITableViewCell()
-        }
+              let movieItem = self.movieListViewModel.movieItemList?[indexPath.row] else { return UITableViewCell() }
         
         cell.movieListDelegate = self
-        cell.setMovieListCell(movieItem: movieItem, indexPath: indexPath)
+        cell.setMovieListCell(movieItem: movieItem, favorite: self.movieListViewModel.movieFavoriteList ?? [])
         
         return cell
     }
@@ -170,3 +161,24 @@ extension MovieListViewController: UITableViewDataSourcePrefetching {
         }
     }
 }
+
+extension MovieListViewController: MovieListDelegate {
+    func finishedFetch() {
+        DispatchQueue.main.async {
+            self.indicater.stopAnimating()
+        }
+    }
+    
+    func removeFavoriteItem(item: MovieItem) {
+        self.movieListViewModel.removeFavoriteItem(item: item)
+    }
+    
+    func addFavoriteItem(item: MovieItem) {
+        self.movieListViewModel.addFavoriteItem(item: item)
+    }
+    
+    func favoriteRefresh() {
+        self.movieTableView.reloadData()
+    }
+}
+

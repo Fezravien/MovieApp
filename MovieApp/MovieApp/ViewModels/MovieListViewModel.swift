@@ -76,6 +76,10 @@ final class MovieListViewModel {
         }
     }
     
+    func addFavoriteItems(items: [MovieItem]) {
+        self.movieFavoriteList = items
+    }
+    
     func removeFavoriteItem(item: MovieItem) {
         guard let favoriteList = self.movieFavoriteList,
               let index = favoriteList.firstIndex(of: item) else {
@@ -84,6 +88,16 @@ final class MovieListViewModel {
               }
 
         self.movieFavoriteList?.remove(at: index)
+    }
+    
+    func indexPathForRemoveItem(item: MovieItem) -> IndexPath {
+        guard let favoriteList = self.movieFavoriteList,
+              let indexPath = favoriteList.firstIndex(of: item) else {
+                  
+                  return IndexPath()
+              }
+        
+        return IndexPath(row: indexPath, section: .zero)
     }
     
     func setItem(movieItem: MovieItem) {

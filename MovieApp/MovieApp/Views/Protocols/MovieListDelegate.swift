@@ -11,4 +11,5 @@ protocol MovieListDelegate: AnyObject {
     func finishedFetch()
     func removeFavoriteItem(item: MovieItem)
     func addFavoriteItem(item: MovieItem)
+    func favoriteRefresh()
 }
