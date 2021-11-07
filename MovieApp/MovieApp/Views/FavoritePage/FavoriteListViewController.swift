@@ -103,7 +103,13 @@ extension FavoriteListViewController: UITableViewDataSource {
 }
 
 extension FavoriteListViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let item = self.favoriteListViewModel.movieFavoriteList?[indexPath.row] else { return }
+        let movieDetailViewController = MovieDetailViewController()
+        movieDetailViewController.movieListDelegate = self
+        movieDetailViewController.setDetailViewController(item: item, favorite: self.favoriteListViewModel.movieFavoriteList ?? [])
+        self.navigationController?.pushViewController(movieDetailViewController, animated: true)
+    }
 }
 
 extension FavoriteListViewController: FavoriteListDelegate {
@@ -118,9 +124,14 @@ extension FavoriteListViewController: FavoriteListDelegate {
         self.favoriteListViewModel.removeFavoriteItem(item: item)
         self.movieListDelegate?.removeFavoriteItem(item: item)
     }
-    
+}
+
+extension FavoriteListViewController: MovieListDelegate {
     func addFavoriteItem(item: MovieItem) {
-//        self.favoriteListViewModel.addFavoriteItem(item: item)
-//        self.movieListDelegate?.addFavoriteItem(item: item)
+        self.movieListDelegate?.addFavoriteItem(item: item)
+    }
+    
+    func favoriteRefresh() {
+        self.movieListDelegate?.favoriteRefresh()
     }
 }

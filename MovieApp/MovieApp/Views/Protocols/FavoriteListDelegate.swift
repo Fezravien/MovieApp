@@ -8,6 +8,5 @@
 import Foundation
 
 protocol FavoriteListDelegate: AnyObject {
-    func addFavoriteItem(item: MovieItem)
     func removeFavoriteItem(item: MovieItem)
 }
