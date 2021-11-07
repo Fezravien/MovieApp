@@ -14,6 +14,8 @@ final class MovieListViewModel {
         case rating
     }
     
+    // MARK: - Initilaize 프로퍼티 (핸들러, 프로퍼티 옵져버)
+    
     private var itemListFetchHandler: (() -> Void)?
     private var itemImageHandler: (() -> Void)?
     private var favoriteListHandler: (() -> Void)?
@@ -43,9 +45,13 @@ final class MovieListViewModel {
         }
     }
     
+    // MARK: - Initialize and Session 의존성 주입
+    
     init(session: MovieSession = URLSession.shared) {
         self.session = session
     }
+    
+    // MARK: - Data Binding
     
     func bindItemListFetch(itemListFetchHandler: @escaping () -> Void) {
         self.itemListFetchHandler = itemListFetchHandler
@@ -62,6 +68,8 @@ final class MovieListViewModel {
     func bindMovieFavorite(favoriteHandler: @escaping () -> Void) {
         self.favoriteHandler = favoriteHandler
     }
+    
+    // MARK: - Manage Favorite Item
     
     func toggleFavortie(favorite: Bool) {
         self.movieFavorite = favorite
@@ -89,6 +97,8 @@ final class MovieListViewModel {
         self.movieFavoriteList?.remove(at: index)
     }
     
+    // MARK: - Manage movie item
+    
     func indexPathForRemoveItem(item: MovieItem) -> IndexPath {
         guard let favoriteList = self.movieFavoriteList,
               let indexPath = favoriteList.firstIndex(of: item) else {
@@ -107,6 +117,8 @@ final class MovieListViewModel {
         self.movieItemList = []
     }
     
+    // MARK: - Manage movie fetch page
+    
     func plusPage() {
         self.moviePage += 1
     }
@@ -115,6 +127,8 @@ final class MovieListViewModel {
         self.moviePage = 0
     }
     
+    // MARK: - Manage search text
+    
     func setSearchText(search: String) {
         self.movieSearchText = search
     }
@@ -122,6 +136,8 @@ final class MovieListViewModel {
     func resetSearchText() {
         self.movieSearchText = nil
     }
+    
+    // MARK: - Convert Text
     
     func convertTitle() -> String {
         guard let item = self.movieItem else { return "" }
@@ -172,6 +188,8 @@ final class MovieListViewModel {
             return "평점 : \(convertedText)"
         }
     }
+    
+    // MARK: - Networking 
     
     func fetch(page: Int, search: String, completion: @escaping (Error?) -> Void) {
         let networkManager = NetworkManager(networkLoader: Network(session: self.session), decoder: JSONDecoder())
