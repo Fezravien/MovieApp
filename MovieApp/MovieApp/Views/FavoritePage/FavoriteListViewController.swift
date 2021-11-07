@@ -24,6 +24,8 @@ final class FavoriteListViewController: UIViewController {
     private let favoriteListViewModel = MovieListViewModel()
     private var removeIndexPath: IndexPath?
     weak var movieListDelegate: MovieListDelegate?
+    
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,10 +40,24 @@ final class FavoriteListViewController: UIViewController {
         self.movieListDelegate?.favoriteRefresh()
     }
     
+    // MARK: - Main page to Favorite Page 설정
+    
     func setFavorite(favoriteList: [MovieItem]) {
         self.favoriteListViewModel.addFavoriteItems(items: favoriteList)
         self.navigationItem.title = "즐겨찾기 목록"
     }
+    
+    // MARK: - FavoriteListViewController 설정
+    
+    private func setDataSource() {
+        self.favoriteTableView.dataSource = self
+    }
+    
+    private func setDelegate() {
+        self.favoriteTableView.delegate = self
+    }
+    
+    // MARK: - MovieListViewModel과 Data Binding
     
     private func bindData() {
         self.favoriteListViewModel.bindMovieFavoriteList {
@@ -53,13 +69,7 @@ final class FavoriteListViewController: UIViewController {
         }
     }
     
-    private func setDataSource() {
-        self.favoriteTableView.dataSource = self
-    }
-    
-    private func setDelegate() {
-        self.favoriteTableView.delegate = self
-    }
+    // MARK: - Constraint 설정 (MovieListCell)
     
     private func setConstraints() {
         setFavoriteTableViewConstraint()
@@ -86,6 +96,8 @@ final class FavoriteListViewController: UIViewController {
     }
 }
 
+// MARK: - UITableView Data Source
+
 extension FavoriteListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.favoriteListViewModel.movieFavoriteList?.count ?? 0
@@ -102,6 +114,8 @@ extension FavoriteListViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableView Delegate
+
 extension FavoriteListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = self.favoriteListViewModel.movieFavoriteList?[indexPath.row] else { return }
@@ -111,6 +125,8 @@ extension FavoriteListViewController: UITableViewDelegate {
         self.navigationController?.pushViewController(movieDetailViewController, animated: true)
     }
 }
+
+// MARK: - Delegate Patterns 
 
 extension FavoriteListViewController: FavoriteListDelegate {
     func finishedFetch() {

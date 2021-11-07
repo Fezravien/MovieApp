@@ -27,6 +27,8 @@ class MovieListViewController: UIViewController {
         return search
     }()
     private let movieListViewModel = MovieListViewModel()
+    
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,12 +39,16 @@ class MovieListViewController: UIViewController {
         setDelegate()
     }
     
+    // MARK: - 영화 목록 fetch
+    
     private func fetchMovie(page: Int, search: String) {
         self.indicater.startAnimating()
         self.movieListViewModel.fetch(page: page, search: search) { error in
             // TODO : - 네트워크 이상 이벤트를 가지고 다른 작업을 할 수 있음
         }
     }
+    
+    // MARK: - MovieListViewController 설정
     
     private func setDataSource() {
         self.movieTableView.dataSource = self
@@ -72,6 +78,8 @@ class MovieListViewController: UIViewController {
         self.navigationController?.pushViewController(favoriteListViewController, animated: true)
     }
     
+    // MARK: - MovieListViewModel과 Data Binding
+    
     private func bindData() {
         self.movieListViewModel.bindItemListFetch { [unowned self] in
             DispatchQueue.main.async {
@@ -79,6 +87,8 @@ class MovieListViewController: UIViewController {
             }
         }
     }
+    
+    // MARK: - Constraint
     
     private func setConstraints() {
         setMovieTableViewConstraint()
@@ -106,6 +116,8 @@ class MovieListViewController: UIViewController {
     }
 }
 
+// MARK: - UITableView DataSource
+
 extension MovieListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.movieListViewModel.movieItemList?.count ?? 0
@@ -122,6 +134,8 @@ extension MovieListViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableView Delegate
+
 extension MovieListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = self.movieListViewModel.movieItemList?[indexPath.row] else { return }
@@ -131,6 +145,8 @@ extension MovieListViewController: UITableViewDelegate {
         self.navigationController?.pushViewController(movieDetailViewController, animated: true)
     }
 }
+
+// MARK: - UISearchBarDelegate
 
 extension MovieListViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -148,6 +164,8 @@ extension MovieListViewController: UISearchBarDelegate {
     }
 }
 
+// MARK: - UITableView DataSource Prefetching (Paging)
+
 extension MovieListViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         let movies = self.movieListViewModel.movieItemList?.count
@@ -161,6 +179,8 @@ extension MovieListViewController: UITableViewDataSourcePrefetching {
         }
     }
 }
+
+// MARK: - Delegate Pattern Method
 
 extension MovieListViewController: MovieListDelegate {
     func finishedFetch() {

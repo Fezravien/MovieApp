@@ -29,6 +29,8 @@ final class MovieDetailViewController: UIViewController {
     }()
     private let movieDetailViewModel = MovieListViewModel()
     weak var movieListDelegate: MovieListDelegate?
+    
+    // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,6 +45,8 @@ final class MovieDetailViewController: UIViewController {
         super.viewWillDisappear(animated)
         self.movieListDelegate?.favoriteRefresh()
     }
+    
+    // MARK: - Main page to Detail page 설정
 
     func setDetailViewController(item: MovieItem, favorite: [MovieItem]) {
         bindData()
@@ -50,18 +54,10 @@ final class MovieDetailViewController: UIViewController {
         self.movieDetailViewModel.setItem(movieItem: item)
     }
     
+    // MARK: - MovieDetailViewController 설정
+    
     private func setDelegate() {
         self.movieWebView.navigationDelegate = self
-    }
-    
-    private func excuteMoiveWeb() {
-        guard let item = self.movieDetailViewModel.movieItem,
-              let url = URL(string: item.link) else {
-                  
-                  return
-              }
-        let request = URLRequest(url: url)
-        self.movieWebView.load(request)
     }
     
     private func setFavorite(movieItem: MovieItem, favorite: [MovieItem]) {
@@ -106,8 +102,9 @@ final class MovieDetailViewController: UIViewController {
         guard let item = self.movieDetailViewModel.movieItem else { return }
         self.movieListDelegate?.addFavoriteItem(item: item)
         self.movieDetailViewModel.toggleFavortie(favorite: true)
-
     }
+    
+    // MARK: - MoviewListViewModel과 Data Binding
     
     private func bindData() {
         self.movieDetailViewModel.bindMovieFavorite {
@@ -118,6 +115,20 @@ final class MovieDetailViewController: UIViewController {
             }
         }
     }
+    
+    // MARK: - WebView
+    
+    private func excuteMoiveWeb() {
+        guard let item = self.movieDetailViewModel.movieItem,
+              let url = URL(string: item.link) else {
+                  
+                  return
+              }
+        let request = URLRequest(url: url)
+        self.movieWebView.load(request)
+    }
+    
+    // MARK: - Constraints
 
     private func setConstraints() {
         setMovieWebViewConstraint()
@@ -146,6 +157,8 @@ final class MovieDetailViewController: UIViewController {
         ])
     }
 }
+
+// MARK: - WebView Delegate (WKNavigationDelegate)
 
 extension MovieDetailViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
