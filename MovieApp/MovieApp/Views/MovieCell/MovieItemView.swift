@@ -62,7 +62,6 @@ final class MovieItemView: UIView {
         setMovieInformationStackViewConstraint()
     }
     
-    
     private func setMovieImageViewConstraint() {
         self.addSubview(self.movieImageView)
         

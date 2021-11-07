@@ -24,6 +24,8 @@ final class MovieListCell: UITableViewCell {
     weak var movieListDelegate: MovieListDelegate?
     weak var favoriteListDelegate: FavoriteListDelegate?
     
+    // MARK: - TableCell DataSource에서 Cell 설정
+    
     func setMovieListCell(movieItem: MovieItem, favorite: [MovieItem]) {
         setMovieItemViewConstraint()
         bindData()
@@ -63,6 +65,8 @@ final class MovieListCell: UITableViewCell {
             self.movieListDelegate?.addFavoriteItem(item: item)
         }
     }
+    
+    // MARK: - Reuse Cell 초기화
 
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -90,6 +94,8 @@ final class MovieListCell: UITableViewCell {
         }
         registeAccessoryViewGestureRecognizer()
     }
+    
+    // MARK: - ViewModel과 Data Binding
 
     private func bindData() {
         self.movieListViewModel.bindItemImage {
@@ -125,6 +131,8 @@ final class MovieListCell: UITableViewCell {
             }
         }
     }
+    
+    // MARK: - 영화 정보 Custom UIView constraint
     
     private func setMovieItemViewConstraint() {
         self.contentView.addSubview(self.movieItemView)
