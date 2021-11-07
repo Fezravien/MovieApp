@@ -61,7 +61,6 @@ final class MovieListCell: UITableViewCell {
             self.movieListViewModel.toggleFavortie(favorite: true)
             self.movieListViewModel.addFavoriteItem(item: item)
             self.movieListDelegate?.addFavoriteItem(item: item)
-            self.favoriteListDelegate?.addFavoriteItem(item: item)
         }
     }
 
