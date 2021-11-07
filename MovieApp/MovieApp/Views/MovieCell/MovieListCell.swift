@@ -15,28 +15,31 @@ final class MovieListCell: UITableViewCell {
         case no
     }
     
-    private let movieItemView = MovieItemView()
-    private let moviewListViewModel = MovieListViewModel()
+    private let movieItemView: MovieItemView = {
+        let view = MovieItemView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    private let movieListViewModel = MovieListViewModel()
     weak var movieListDelegate: MovieListDelegate?
     weak var favoriteListDelegate: FavoriteListDelegate?
     
     func setMovieListCell(movieItem: MovieItem, favorite: [MovieItem]) {
-//        setConstraints()
         setMovieItemViewConstraint()
         bindData()
         setFavorite(movieItem: movieItem, favorite: favorite)
         registeAccessoryViewGestureRecognizer()
         self.selectionStyle = .none
-        self.moviewListViewModel.setItem(movieItem: movieItem)
-        self.moviewListViewModel.downloadImage(movieItem.image)
+        self.movieListViewModel.setItem(movieItem: movieItem)
+        self.movieListViewModel.downloadImage(movieItem.image)
     }
     
     private func setFavorite(movieItem: MovieItem, favorite: [MovieItem]) {
-        self.moviewListViewModel.addFavoriteItems(items: favorite)
+        self.movieListViewModel.addFavoriteItems(items: favorite)
         if favorite.contains(movieItem) {
-            self.moviewListViewModel.toggleFavortie(favorite: true)
+            self.movieListViewModel.toggleFavortie(favorite: true)
         } else {
-            self.moviewListViewModel.toggleFavortie(favorite: false)
+            self.movieListViewModel.toggleFavortie(favorite: false)
         }
     }
     
@@ -46,17 +49,17 @@ final class MovieListCell: UITableViewCell {
     }
     
     @objc private func tappedAccessoryView() {
-        guard let item = self.moviewListViewModel.movieItem else { return }
-        let isfavorite = self.moviewListViewModel.movieFavorite
+        guard let item = self.movieListViewModel.movieItem else { return }
+        let isfavorite = self.movieListViewModel.movieFavorite
         
         if isfavorite {
-            self.moviewListViewModel.toggleFavortie(favorite: false)
-            self.moviewListViewModel.removeFavoriteItem(item: item)
+            self.movieListViewModel.toggleFavortie(favorite: false)
+            self.movieListViewModel.removeFavoriteItem(item: item)
             self.movieListDelegate?.removeFavoriteItem(item: item)
             self.favoriteListDelegate?.removeFavoriteItem(item: item)
         } else {
-            self.moviewListViewModel.toggleFavortie(favorite: true)
-            self.moviewListViewModel.addFavoriteItem(item: item)
+            self.movieListViewModel.toggleFavortie(favorite: true)
+            self.movieListViewModel.addFavoriteItem(item: item)
             self.movieListDelegate?.addFavoriteItem(item: item)
             self.favoriteListDelegate?.addFavoriteItem(item: item)
         }
@@ -90,33 +93,33 @@ final class MovieListCell: UITableViewCell {
     }
 
     private func bindData() {
-        self.moviewListViewModel.bindItemImage {
+        self.movieListViewModel.bindItemImage {
             self.movieListDelegate?.finishedFetch()
-            guard let movieImage = self.moviewListViewModel.movieImage,
-                  let item = self.moviewListViewModel.movieItem else {
+            guard let movieImage = self.movieListViewModel.movieImage,
+                  let item = self.movieListViewModel.movieItem else {
                       
                       return
                   }
             
             DispatchQueue.main.async {
                 self.movieItemView.movieImageView.image = UIImage(data: movieImage)
-                self.movieItemView.movieTitle.text = self.moviewListViewModel.convertTitle()
-                self.movieItemView.movieDirector.text = self.moviewListViewModel.convertFormat(movieText: item.director, movieInformation: .diector)
-                self.movieItemView.movieActor.text = self.moviewListViewModel.convertFormat(movieText: item.actor, movieInformation: .actor)
-                self.movieItemView.movieRating.text = self.moviewListViewModel.convertFormat(movieText: item.userRating, movieInformation: .rating)
+                self.movieItemView.movieTitle.text = self.movieListViewModel.convertTitle()
+                self.movieItemView.movieDirector.text = self.movieListViewModel.convertFormat(movieText: item.director, movieInformation: .diector)
+                self.movieItemView.movieActor.text = self.movieListViewModel.convertFormat(movieText: item.actor, movieInformation: .actor)
+                self.movieItemView.movieRating.text = self.movieListViewModel.convertFormat(movieText: item.userRating, movieInformation: .rating)
             }
         }
         
-        self.moviewListViewModel.bindMovieFavorite {
-            if self.moviewListViewModel.movieFavorite {
+        self.movieListViewModel.bindMovieFavorite {
+            if self.movieListViewModel.movieFavorite {
                 self.setAccessoryView(favorite: .yes)
             } else {
                 self.setAccessoryView(favorite: .no)
             }
         }
         
-        self.moviewListViewModel.bindMovieFavoriteList {
-            if self.moviewListViewModel.movieFavorite {
+        self.movieListViewModel.bindMovieFavoriteList {
+            if self.movieListViewModel.movieFavorite {
                 self.setAccessoryView(favorite: .yes)
             } else {
                 self.setAccessoryView(favorite: .no)
@@ -126,7 +129,7 @@ final class MovieListCell: UITableViewCell {
     
     private func setMovieItemViewConstraint() {
         self.contentView.addSubview(self.movieItemView)
-        self.movieItemView.frame = CGRect(x: 0, y: 0, width: self.contentView.frame.width, height: self.contentView.frame.width * 4/15 + 16)
+        self.movieItemView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             self.movieItemView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
