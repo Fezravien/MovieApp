@@ -20,6 +20,13 @@ final class MovieDetailViewController: UIViewController {
         webView.translatesAutoresizingMaskIntoConstraints = false
         return webView
     }()
+    private let indicater: UIActivityIndicatorView = {
+        let indicater = UIActivityIndicatorView()
+        indicater.hidesWhenStopped = true
+        indicater.style = .large
+        indicater.translatesAutoresizingMaskIntoConstraints = false
+        return indicater
+    }()
     private let movieDetailViewModel = MovieListViewModel()
     weak var movieListDelegate: MovieListDelegate?
 
@@ -33,13 +40,18 @@ final class MovieDetailViewController: UIViewController {
     }
 
     func setDetailViewController(item: MovieItem, favorite: [MovieItem]) {
-        setMovieWebViewConstraint()
+        setConstraints()
+        setDelegate()
         bindData()
         setFavorite(movieItem: item, favorite: favorite)
         self.movieDetailViewModel.setItem(movieItem: item)
         self.navigationItem.title = self.movieDetailViewModel.convertTitle()
         self.view.backgroundColor = .white
         excuteMoiveWeb()
+    }
+    
+    private func setDelegate() {
+        self.movieWebView.navigationDelegate = self
     }
     
     private func excuteMoiveWeb() {
@@ -95,6 +107,10 @@ final class MovieDetailViewController: UIViewController {
         }
     }
 
+    private func setConstraints() {
+        setMovieWebViewConstraint()
+        setIndicaterConstraint()
+    }
     
     private func setMovieWebViewConstraint() {
         self.view.addSubview(self.movieWebView)
@@ -109,4 +125,22 @@ final class MovieDetailViewController: UIViewController {
         ])
     }
     
+    private func setIndicaterConstraint() {
+        self.movieWebView.addSubview(self.indicater)
+        
+        NSLayoutConstraint.activate([
+            self.indicater.centerXAnchor.constraint(equalTo: self.movieWebView.centerXAnchor),
+            self.indicater.centerYAnchor.constraint(equalTo: self.movieWebView.centerYAnchor)
+        ])
+    }
+}
+
+extension MovieDetailViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.indicater.startAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        self.indicater.stopAnimating()
+    }
 }

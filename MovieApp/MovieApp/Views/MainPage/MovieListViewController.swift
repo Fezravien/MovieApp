@@ -40,12 +40,7 @@ class MovieListViewController: UIViewController {
     private func fetchMovie(page: Int, search: String) {
         self.indicater.startAnimating()
         self.movieListViewModel.fetch(page: page, search: search) { _ in
-//            if let error = error, let networkError = error as? MovieError {
-//                DispatchQueue.main.async {
-//                    self.alert(title: networkError.descripion)
-//                }
-//                return
-//            }
+
         }
     }
 
