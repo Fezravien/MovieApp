@@ -32,6 +32,11 @@ final class MovieDetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationItem.title = self.movieDetailViewModel.convertTitle()
+        self.view.backgroundColor = .white
+        setConstraints()
+        setDelegate()
+        excuteMoiveWeb()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -40,14 +45,9 @@ final class MovieDetailViewController: UIViewController {
     }
 
     func setDetailViewController(item: MovieItem, favorite: [MovieItem]) {
-        setConstraints()
-        setDelegate()
         bindData()
         setFavorite(movieItem: item, favorite: favorite)
         self.movieDetailViewModel.setItem(movieItem: item)
-        self.navigationItem.title = self.movieDetailViewModel.convertTitle()
-        self.view.backgroundColor = .white
-        excuteMoiveWeb()
     }
     
     private func setDelegate() {
@@ -67,9 +67,15 @@ final class MovieDetailViewController: UIViewController {
     private func setFavorite(movieItem: MovieItem, favorite: [MovieItem]) {
         self.movieDetailViewModel.addFavoriteItems(items: favorite)
         if favorite.contains(movieItem) {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"), style: .plain, target: self, action: #selector(tappedYesFavoriteButton))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"),
+                                                                     style: .plain,
+                                                                     target: self,
+                                                                     action: #selector(tappedYesFavoriteButton))
         } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star"), style: .plain, target: self, action: #selector(tappedNoFavoriteButton))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star"),
+                                                                     style: .plain,
+                                                                     target: self,
+                                                                     action: #selector(tappedNoFavoriteButton))
         }
         self.navigationItem.rightBarButtonItem?.tintColor = .systemOrange
     }
@@ -77,9 +83,15 @@ final class MovieDetailViewController: UIViewController {
     private func setNavigationBarButtonItem(favorite: Favorite) {
         switch favorite {
         case .yes:
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"), style: .plain, target: self, action: #selector(tappedYesFavoriteButton))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star.fill"),
+                                                                     style: .plain,
+                                                                     target: self,
+                                                                     action: #selector(tappedYesFavoriteButton))
         case .no:
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star"), style: .plain, target: self, action: #selector(tappedNoFavoriteButton))
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "star"),
+                                                                     style: .plain,
+                                                                     target: self,
+                                                                     action: #selector(tappedNoFavoriteButton))
         }
         self.navigationItem.rightBarButtonItem?.tintColor = .systemOrange
     }

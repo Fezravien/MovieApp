@@ -8,7 +8,6 @@
 import Foundation
 
 final class MovieListViewModel {
-    
     enum MovieInformation {
         case diector
         case actor
