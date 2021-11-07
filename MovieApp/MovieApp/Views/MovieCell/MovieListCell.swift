@@ -129,8 +129,7 @@ final class MovieListCell: UITableViewCell {
     
     private func setMovieItemViewConstraint() {
         self.contentView.addSubview(self.movieItemView)
-        self.movieItemView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             self.movieItemView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
             self.movieItemView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
