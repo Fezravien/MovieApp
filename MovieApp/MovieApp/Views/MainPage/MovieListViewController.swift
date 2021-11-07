@@ -129,7 +129,13 @@ extension MovieListViewController: UITableViewDataSource {
 }
 
 extension MovieListViewController: UITableViewDelegate {
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let item = self.movieListViewModel.movieItemList?[indexPath.row] else { return }
+        let movieDetailViewController = MovieDetailViewController()
+        movieDetailViewController.movieListDelegate = self
+        movieDetailViewController.setDetailViewController(item: item, favorite: self.movieListViewModel.movieFavoriteList ?? [])
+        self.navigationController?.pushViewController(movieDetailViewController, animated: true)
+    }
 }
 
 extension MovieListViewController: UISearchBarDelegate {
