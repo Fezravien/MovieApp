@@ -39,11 +39,10 @@ class MovieListViewController: UIViewController {
     
     private func fetchMovie(page: Int, search: String) {
         self.indicater.startAnimating()
-        self.movieListViewModel.fetch(page: page, search: search) { _ in
-
+        self.movieListViewModel.fetch(page: page, search: search) { error in
+            // TODO : - 네트워크 이상 이벤트를 가지고 다른 작업을 할 수 있음
         }
     }
-
     
     private func setDataSource() {
         self.movieTableView.dataSource = self
