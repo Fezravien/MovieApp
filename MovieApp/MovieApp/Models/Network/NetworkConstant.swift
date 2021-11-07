@@ -17,8 +17,6 @@ enum NetworkConstant {
         switch self {
         case .get(let page, let search):
             return URL(string: NetworkConstant.baseURL + "?query=\(search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" + "&start=\(10*page+1)")
-//            let getURL = NetworkConstant.baseURL + "?query=\(search)"
-//            return URL(string: getURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "" )
         }
     }
 }
